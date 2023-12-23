@@ -1,14 +1,19 @@
 import express from 'express';
+import router from './controllers/blogs';
+import "express-async-errors";
+import { connectToDatabase } from './util/db';
 const app = express();
 app.use(express.json());
 
 const PORT = 3000;
 
-app.get('/ping', (_req, res) => {
-  console.log('someone pinged here');
-  res.send('pong');
-});
+app.use("/api", router);
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+const start = async () => {
+  await connectToDatabase();
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+};
+
+void start();
