@@ -1,8 +1,12 @@
 import { Sequelize } from 'sequelize';
 import { Umzug, SequelizeStorage } from 'umzug';
-import { DATABASE_URL } from '../config';
-console.log(DATABASE_URL);
-const sequelize = new Sequelize(DATABASE_URL as string);
+import { DATABASE_URL, DATABASE_TEST_URL } from '../config';
+
+const db = process.env.NODE_ENV === 'test' 
+  ? DATABASE_TEST_URL
+  : DATABASE_URL;
+
+const sequelize = new Sequelize(db as string);
 
 const migrationConf = {
   migrations: {

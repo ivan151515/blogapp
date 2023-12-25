@@ -1,19 +1,13 @@
-import express from 'express';
-import blogRouter from './controllers/blogs';
-import "express-async-errors";
 import { connectToDatabase } from './util/db';
-import userRouter from './controllers/users';
-const app = express();
-app.use(express.json());
+import app from "./app";
+import { PORT } from './config';
 
-const PORT = 3000;
+const port = PORT || 3001;
 
-app.use("/api/blogs", blogRouter);
-app.use("/api/users", userRouter);
 const start = async () => {
   await connectToDatabase();
-  app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+  app.listen(port, () => {
+    console.log(`Server running on port ${port}`);
   });
 };
 
