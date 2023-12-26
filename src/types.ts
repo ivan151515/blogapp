@@ -3,3 +3,8 @@ export type UserEntry = {
     username: string,
     password: string
 };
+
+export type LoginEntry = {
+    username : string,
+    password : string
+};

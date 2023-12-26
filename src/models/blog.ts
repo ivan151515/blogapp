@@ -19,7 +19,7 @@ Blog.init({
       date: {
         type: DataTypes.DATE
       },
-        userId : {
+      userId : {
             type: DataTypes.INTEGER,
             allowNull: false,
             references: { model: 'users', key: 'id'

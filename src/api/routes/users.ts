@@ -1,18 +1,18 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import {  Router } from "express";
-import User from "../models/user";
-import { toUserEntry } from "../util/requestParsers";
+import User from "../../models/user";
+import { toUserEntry } from "../../util/requestParsers";
 import { addUser } from "../services/user";
 
-const router = Router();
+const userRouter = Router();
 
 // eslint-disable-next-line @typescript-eslint/no-misused-promises
-router.get("/", async(_req, res)  => {
+userRouter.get("/", async(_req, res)  => {
     const users = await User.findAll();
     res.json(users);
 });
 
-router.post("/", async (req, res) => {
+userRouter.post("/", async (req, res) => {
     const userEntry = toUserEntry(req.body);
 
 
@@ -21,10 +21,10 @@ router.post("/", async (req, res) => {
 
     res.json(user);
 });
-router.get("/:id", async(req, res) => {
+userRouter.get("/:id", async(req, res) => {
     const user = await User.findByPk(req.params.id);
 
     res.json(user);
 }); 
 
-export default router;
+export default userRouter;

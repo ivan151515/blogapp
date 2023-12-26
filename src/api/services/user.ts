@@ -1,7 +1,7 @@
-import User from "../models/user";
-import { UserEntry } from "../types";
-import { createPassword } from "../util/createPassword";
-import { isString } from "../util/requestParsers";
+import User from "../../models/user";
+import { UserEntry } from "../../types";
+import { createPassword } from "../../util/createPassword";
+import { isString } from "../../util/requestParsers";
 export const addUser = async(entry : UserEntry) => {
     const hash = await createPassword(entry.password);
     if (!isString(hash)) {

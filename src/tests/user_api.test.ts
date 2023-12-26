@@ -7,11 +7,7 @@ const api = supertest(app);
 let user: User;
 beforeAll(async() => {
   await connectToDatabase();
-  await User.destroy({
-    where: {
-      name: "test"
-    }
-  });
+    await User.sync({force: true});
    user =await User.create({
     username: "Ivan",
     name: "test",
@@ -100,6 +96,5 @@ describe(("/api/users"), () => {
 
 
 afterAll(async() => {
-    
     await sequelize.close();
 });

@@ -1,5 +1,5 @@
 import BadRequestError from "../errors/BadRequestError";
-import { UserEntry } from "../types";
+import { LoginEntry, UserEntry } from "../types";
 export const isString = (text : unknown) : text is string => {
     return typeof text === 'string' || text instanceof String;
 };
@@ -11,6 +11,20 @@ const parseString = (text : unknown, minLength : number, name :string) : string 
         throw new BadRequestError({message: name + " length must be minimum  " + minLength + " characters long.", code: 401});
     }
     return text;
+};
+export const toLoginEntry = (body: unknown) : LoginEntry=> {
+    const loginEntry : LoginEntry = {
+        username: "",
+        password: ""
+    };
+
+    if (body && typeof body === "object" && "username" in body && "password" in body) {
+        loginEntry.password = parseString(body.password, 8, "password");
+        loginEntry.username = parseString(body.username, 4, "username");
+    } else {
+        throw new BadRequestError({message: "Invalid input", code: 401});
+    }
+    return loginEntry;
 };
 export const toUserEntry = (body : unknown) : UserEntry => {
     const user : UserEntry = {
