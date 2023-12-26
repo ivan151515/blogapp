@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import {  Router } from "express";
-import User from "../../models/user";
+import User from "../../db/models/user";
 import { toUserEntry } from "../../util/requestParsers";
-import { addUser } from "../services/user";
+import { addUser } from "../../db/services/user";
 
 const userRouter = Router();
 

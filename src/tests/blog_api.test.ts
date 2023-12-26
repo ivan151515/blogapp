@@ -1,8 +1,8 @@
 import supertest from "supertest";
 import app from "../app";
 import { connectToDatabase, sequelize } from "../util/db";
-import Blog from "../models/blog";
-import User from "../models/user";
+import Blog from "../db/models/blog";
+import User from "../db/models/user";
 
 const api = supertest(app);
 let blog : Blog;

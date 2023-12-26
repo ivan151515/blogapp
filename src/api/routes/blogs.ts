@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import { Router, Request, Response } from "express";
-import Blog from "../../models/blog";
+import Blog from "../../db/models/blog";
 
 const blogRouter = Router();
 

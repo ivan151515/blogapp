@@ -1,4 +1,4 @@
-import User from "../../models/user";
+import User from "../models/user";
 import { UserEntry } from "../../types";
 import { createPassword } from "../../util/createPassword";
 import { isString } from "../../util/requestParsers";

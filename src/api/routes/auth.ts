@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import { Router } from "express";
 import { toLoginEntry } from "../../util/requestParsers";
-import User from "../../models/user";
+import User from "../../db/models/user";
 import BadRequestError from "../../errors/BadRequestError";
 
 const authRouter = Router();
