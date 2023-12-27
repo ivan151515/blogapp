@@ -1,6 +1,25 @@
-import { DataTypes, Model } from "sequelize";
+import { DataTypes, Model, Optional } from "sequelize";
 import { sequelize } from "../../util/db";
-class Blog extends Model {}
+
+interface BlogAttributes {
+    id: number,
+    content: string,
+    important: boolean,
+    date: string,
+    userId: number
+}
+
+export interface BlogInput extends Optional<BlogAttributes, 'id' | 'userId' | "date"> {}
+export interface BlogOutput extends Required<BlogAttributes>{}
+
+
+class Blog extends Model<BlogAttributes, BlogInput> implements BlogAttributes {
+  public id!: number;
+  public content!: string;
+  public important!: boolean;
+  public date!: string;
+  public userId!: number;
+}
 
 Blog.init({
     id: {
