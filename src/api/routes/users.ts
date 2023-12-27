@@ -16,10 +16,14 @@ userRouter.post("/", async (req, res) => {
     const userEntry = toUserEntry(req.body);
 
 
-    //TODO: CREATE PASSWORD HASH, SEPARATE SERVICE FROM ROUTES
-    const user = await addUser(userEntry);
+    
+        const user = await addUser(userEntry);
+        
+        res.json(user);
+        
 
-    res.json(user);
+
+    
 });
 userRouter.get("/:id", async(req, res) => {
     const user = await User.findByPk(req.params.id);
