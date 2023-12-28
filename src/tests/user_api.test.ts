@@ -74,7 +74,7 @@ describe(("/api/users"), () => {
                     });
     test("GET /users/:id", async () => {
                 const res = await api
-                                  .get("/api/users/"+ user.getDataValue("id"))
+                                  .get("/api/users/"+ user.id)
                                   .expect(200)
                                   .expect('Content-Type', /application\/json/);
               expect(res.body.id).toBeDefined();
