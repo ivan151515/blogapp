@@ -49,27 +49,27 @@ describe(("/api/users"), () => {
                                 name : "test",
                                 password: "short"
                                 })
-                                .expect(401);
+                                .expect(400);
                     expect(res.body.errors[0].message).toContain("password");
                     await api.post("/api/users").send({
                       
                       name : "test",
                       password: "short"
                       })
-                      .expect(401);
+                      .expect(400);
                     res = await api.post("/api/users").send({
                                 username: "er", 
                                 name : "test",
                                 password: "validPassword"
                                 })
-                                .expect(401);
+                                .expect(400);
                       expect(res.body.errors[0].message).toContain("username");
                       res = await api.post("/api/users").send({
                                   username: "steeven", 
                                   name : "s",
                                   password: "validPassword"
                                   })
-                                  .expect(401);
+                                  .expect(400);
                         expect(res.body.errors[0].message).toContain("name");
                     });
     test("GET /users/:id", async () => {

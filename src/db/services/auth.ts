@@ -3,7 +3,8 @@ import * as userDal from "../dal/user";
 import * as bcrypt from "bcrypt";
 import { sign } from "jsonwebtoken";
 import { JWT_SECRET_KEY } from "../../config";
-import { LoginEntry } from "../../types";
+import { LoginEntry, TokenData } from "../../types";
+
 
 
 export const login = async ({username, password} : LoginEntry) => {
@@ -17,7 +18,7 @@ export const login = async ({username, password} : LoginEntry) => {
         throw new BadRequestError({message: "Incorrect username or password", code:403});
     }
 
-    const tokenData = {
+    const tokenData : TokenData = {
         username,
         id: user.id
     };

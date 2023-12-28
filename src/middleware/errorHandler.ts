@@ -3,6 +3,7 @@ import { CustomError } from "../errors/CustomError";
 import BadRequestError from "../errors/BadRequestError";
 
 export const errorHandler :ErrorRequestHandler = (err, _request, res, _next) => {
+
     if(err instanceof CustomError) {
         const { statusCode, errors, logging } = err;
         if(logging) {
@@ -20,6 +21,9 @@ export const errorHandler :ErrorRequestHandler = (err, _request, res, _next) => 
     }
     if (err.name == "SequelizeDatabaseError") {
         throw new BadRequestError({code: 404, message: "Not found"});
+    }
+    if (err.name == "JsonWebTokenError") {
+      throw new BadRequestError({code: 403, message: "Action not allowed"});
     }
       // Unhandled errors
       console.error(JSON.stringify(err, null, 2));
