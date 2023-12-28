@@ -3,7 +3,7 @@ export type CreateBlogDTO = {
     content: string,
     date: string,
     important: boolean,
-    userId: boolean
+    userId: number
 };
 
-export type updateBlogDTO = Optional<CreateBlogDTO, "important" | "content">;
+export type updateBlogDTO = Optional<CreateBlogDTO, "important" | "content" | "date">;

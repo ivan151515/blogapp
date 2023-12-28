@@ -3,7 +3,7 @@ import { CustomError } from "../errors/CustomError";
 import BadRequestError from "../errors/BadRequestError";
 
 export const errorHandler :ErrorRequestHandler = (err, _request, res, _next) => {
-
+    console.log(JSON.stringify(err, null, 2));
     if(err instanceof CustomError) {
         const { statusCode, errors, logging } = err;
         if(logging) {

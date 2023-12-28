@@ -13,7 +13,7 @@ beforeAll(async() => {
   await User.sync({force: true});
   await  Blog.sync({force: true});
   await api.post("/api/users").send({username:"ivan", name:"IVAN", password: "validpassword"});
-  blog = await Blog.create({content: "hello", important : true, userId: 1}); 
+  blog = await Blog.create({content: "hello", important : false, userId: 1}); 
   const res = await api.post("/api/auth/").send({username: "ivan", password: "validpassword"});
   token = res.body.token as string;
 });
@@ -80,12 +80,41 @@ describe(("/api/blogs"), () => {
           
                             
       });           
-                    
-                      
+      test("PUT /blogs/:id valid input", async () => {
+        const res = await api
+                              .put("/api/blogs/"+ blog.id)
+                              .set("Authorization", "Bearer "+ token)
+                              .send({important: true})
+                              .expect(200)
+                              .expect('Content-Type', /application\/json/);
+      
+        
+         expect(res.body.important).toBe(true);
+    });        
+    test("PUT /blogs/:ID valid input but invalid auth header token", async () => {
+      await api
+               .put("/api/blogs/"+ blog.id)
+               .send({content: "Hello", important: true})
+               .set("Authorization", "Bearer "+ token + "123")
+
+               .expect(403);
+             
+      });
+      //TODO: MAKE A TEST FOR CHECKING WITH USER THAT IS NOT OWNER OF THE BLOG
+      test("PUT /blogs/:id invalid input", async () => {
+        await api
+                .put("/api/blogs/"+ blog.id)
+                .set("Authorization", "Bearer "+ token)
+                .send({})
+                .expect(400);
+
+
+            
+});               
     });
 
-    //TODO: GET /blogs/ID
-    //TODO: POST /blogs/
+    
+    
     //TODO: PUT /blogs/:ID
     //TODO: DELETE /blogs/:ID
     

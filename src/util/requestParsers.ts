@@ -1,3 +1,4 @@
+import { updateBlogDTO } from "../api/dto/blog.dto";
 import BadRequestError from "../errors/BadRequestError";
 import { BlogEntry, LoginEntry, UserEntry } from "../types";
 export const isString = (text : unknown) : text is string => {
@@ -28,6 +29,21 @@ const parseNumber = (value : unknown) : number => {
     } else{
         throw new BadRequestError({message: "Invalid input", code: 400});
     }
+};
+
+export const toUpdateBlogEntry = (body: unknown) : updateBlogDTO => {
+    const blogEntry : updateBlogDTO = {
+        userId: 0
+    };
+
+    if(body && typeof body === "object" && "user" in body && "important" in body && body.user && typeof body.user == "object" && "id" in body.user) {
+        blogEntry.important = parseBoolean(body.important);
+        blogEntry.userId = parseNumber(body.user.id);
+    } else {
+        throw new BadRequestError({message: "Invalid input", code: 400});
+    }
+
+    return blogEntry;
 };
 export const toBlogEntry = (body: unknown) : BlogEntry => {
     const blogEntry : BlogEntry = {

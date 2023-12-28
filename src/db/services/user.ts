@@ -28,3 +28,4 @@ export const getOneUserById = async (id: string) => {
     }
     return user;
 };
+

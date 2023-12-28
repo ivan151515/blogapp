@@ -18,3 +18,16 @@ export const createBlog = async (input : BlogInput) => {
     const blog = await Blog.create(input);
     return blog;
 };
+
+
+export const updateBlog = async (important : boolean, id: string) => {
+    console.log("ime here updating this hshit”!!!!!");
+    const [, [blog]] = await Blog.update({important}, {
+        where: 
+        {
+            id
+         },
+         returning: true
+    });
+    return blog;
+};  

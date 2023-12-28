@@ -15,7 +15,6 @@ export const getAllUsers = async () => {
 };
 
 export const getUserById = async (id: string) => {
-    console.log("DAL", "USER", id);
     const user = await User.findByPk(id);
     
     return user;

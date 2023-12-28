@@ -13,4 +13,5 @@ blogRouter.get("/ping", (_req, res) => {
 blogRouter.get("/", blogController.getBlogs);
 blogRouter.get("/:id", blogController.getBlog);
 blogRouter.post("/",tokenExtractor, blogController.createBlog);
+blogRouter.put("/:id",tokenExtractor, blogController.updateBlog);
 export default blogRouter;

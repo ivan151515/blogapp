@@ -2,7 +2,8 @@
 import * as blogService from "../../../db/services/blog";
 import {RequestHandler } from "express";
 import { BlogEntry } from "../../../types";
-import { toBlogEntry } from "../../../util/requestParsers";
+import { toBlogEntry, toUpdateBlogEntry } from "../../../util/requestParsers";
+import { updateBlogDTO } from "../../dto/blog.dto";
 export const getBlogs : RequestHandler = async (_req, res) => {
     const blogs = await blogService.getAll();
     return res.json(blogs);
@@ -22,4 +23,16 @@ export const createBlog : RequestHandler = async (req, res) => {
     const blog = await blogService.createBlog(blogEntry);
 
     res.json(blog);
+};
+
+export const updateBlog : RequestHandler = async (req, res) => {
+    console.log("IME HEREE UPDATING THIS HST");
+    const {userId, important} : updateBlogDTO = toUpdateBlogEntry(req.body);
+
+    if (important) {
+        const blog = await blogService.updateBlog(userId, important, req.params.id);
+
+        res.json(blog);
+    }else throw new Error("Something went wrong");
+
 };
