@@ -26,7 +26,6 @@ export const createBlog : RequestHandler = async (req, res) => {
 };
 
 export const updateBlog : RequestHandler = async (req, res) => {
-    console.log("IME HEREE UPDATING THIS HST");
     const {userId, important} : updateBlogDTO = toUpdateBlogEntry(req.body);
 
     if (important) {

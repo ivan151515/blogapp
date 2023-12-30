@@ -1,5 +1,5 @@
-import User, { UserInput } from "../models/user";
-
+import { UserInput } from "../models/user";
+import {Blog, User} from "../models";
 export const findUser = async (username : string) => {
     const user = await User.findOne({where: {
         username
@@ -15,7 +15,10 @@ export const getAllUsers = async () => {
 };
 
 export const getUserById = async (id: string) => {
-    const user = await User.findByPk(id);
+    const user = await User.findByPk(id, 
+        {
+            include : Blog
+        });
     
     return user;
 };

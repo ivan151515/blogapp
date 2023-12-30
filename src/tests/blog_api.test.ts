@@ -12,8 +12,8 @@ beforeAll(async() => {
   await connectToDatabase();
   await User.sync({force: true});
   await  Blog.sync({force: true});
-  await api.post("/api/users").send({username:"ivan", name:"IVAN", password: "validpassword"});
-  blog = await Blog.create({content: "hello", important : false, userId: 1}); 
+  const user = await api.post("/api/users").send({username:"ivan", name:"IVAN", password: "validpassword"});
+  blog = await Blog.create({content: "hello", important : false, userId: Number(user.body.id as string)}); 
   const res = await api.post("/api/auth/").send({username: "ivan", password: "validpassword"});
   token = res.body.token as string;
 });
@@ -27,15 +27,17 @@ describe(("/api/blogs"), () => {
         ;
         
     });
-    test("GET /users/:id", async () => {
+    test("GET /blogs/:id", async () => {
       const res = await api
                         .get("/api/blogs/"+ blog.id)
                         .expect(200)
                         .expect('Content-Type', /application\/json/);
           expect(res.body.id).toBeDefined();
           expect(res.body.content).toBe("hello");
+          expect(res.body.user).toBeDefined();
+          expect(res.body.user.username).toBe("ivan");
       }); 
-      test("GET users/:id invalid id gets 404", async() => {
+      test("GET blogs/:id invalid id gets 404", async() => {
           await api.get("/api/blogs/fakeid")
                     .expect(404);
       });                

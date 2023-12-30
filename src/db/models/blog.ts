@@ -1,16 +1,23 @@
 import { DataTypes, Model, Optional } from "sequelize";
 import { sequelize } from "../../util/db";
+import User from "./user";
 
 interface BlogAttributes {
     id: number,
     content: string,
     important: boolean,
-    date: string,
+    date?: string,
     userId: number
 }
-
-export interface BlogInput extends Optional<BlogAttributes, 'id' | 'userId' | "date"> {}
-export interface BlogOutput extends Required<BlogAttributes>{}
+interface UserForBlog {
+  username : string,
+  name : string
+}
+export interface BlogInput extends Optional<BlogAttributes, 'id'> {
+}
+export interface BlogOutput extends Required<BlogAttributes>{
+    user ?: UserForBlog
+}
 
 
 class Blog extends Model<BlogAttributes, BlogInput> implements BlogAttributes {
@@ -38,12 +45,15 @@ Blog.init({
       date: {
         type: DataTypes.DATE
       },
-      userId : {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-            references: { model: 'users', key: 'id'
-        }
-    }},
+      userId: {
+        type: DataTypes.INTEGER,
+        references: {
+          model: User,
+          key: 'id'
+      }
+
+      }
+    },
 {
     sequelize,
     underscored: true,

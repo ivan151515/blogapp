@@ -79,6 +79,7 @@ describe(("/api/users"), () => {
                                   .expect('Content-Type', /application\/json/);
               expect(res.body.id).toBeDefined();
               expect(res.body.username).toBe("Ivan");
+              expect(res.body.blogs).toBeDefined();
     }); 
     test("GET users/:id invalid id gets 404", async() => {
               await api.get("/api/users/fakeid")
