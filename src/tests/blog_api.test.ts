@@ -103,14 +103,16 @@ describe(("/api/blogs"), () => {
              
       });
       //TODO: MAKE A TEST FOR CHECKING WITH USER THAT IS NOT OWNER OF THE BLOG
-      test("PUT /blogs/:id invalid input", async () => {
+      test("PUT /blogs/:id check for user not owner of blog, shouldnt be allowed to update the blog", async () => {
+        await api.post("/api/users").send({username:"steven", name:"IVAN", password: "validpassword"});
+        const res = await api.post("/api/auth/").send({username: "steven", password: "validpassword"});
+        const userToken = res.body.token as string;
         await api
                 .put("/api/blogs/"+ blog.id)
-                .set("Authorization", "Bearer "+ token)
-                .send({})
-                .expect(400);
-
-
+                .set("Authorization", "Bearer "+ userToken)
+                .send({important: true})
+                .expect(403);
+      
             
 });               
     });

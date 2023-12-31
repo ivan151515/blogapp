@@ -25,3 +25,7 @@ export const createUser : RequestHandler = async (req, res) => {
         res.json(user);
         
 };
+
+export const updateProfile : RequestHandler = (req, res) => {
+    console.log(req, res);
+};
