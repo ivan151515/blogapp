@@ -1,4 +1,4 @@
-import supertest from "supertest";
+import supertest, { Response } from "supertest";
 import app from "../app";
 import { connectToDatabase, sequelize } from "../util/db";
 import Blog from "../db/models/blog";
@@ -7,12 +7,13 @@ import User from "../db/models/user";
 const api = supertest(app);
 let blog : Blog;
 let token : string;
+let user :Response;
 beforeAll(async() => {
   
   await connectToDatabase();
   await User.sync({force: true});
   await  Blog.sync({force: true});
-  const user = await api.post("/api/users").send({username:"ivan", name:"IVAN", password: "validpassword"});
+  user = await api.post("/api/users").send({username:"ivan", name:"IVAN", password: "validpassword"});
   blog = await Blog.create({content: "hello", important : false, userId: Number(user.body.id as string)}); 
   const res = await api.post("/api/auth/").send({username: "ivan", password: "validpassword"});
   token = res.body.token as string;
@@ -102,7 +103,6 @@ describe(("/api/blogs"), () => {
                .expect(403);
              
       });
-      //TODO: MAKE A TEST FOR CHECKING WITH USER THAT IS NOT OWNER OF THE BLOG
       test("PUT /blogs/:id check for user not owner of blog, shouldnt be allowed to update the blog", async () => {
         await api.post("/api/users").send({username:"steven", name:"IVAN", password: "validpassword"});
         const res = await api.post("/api/auth/").send({username: "steven", password: "validpassword"});
@@ -115,8 +115,35 @@ describe(("/api/blogs"), () => {
       
             
 });               
+});
+describe("post/:id/comments ", () => {
+    test("POST /blogs/:id/comments happy path", async () => {
+      const res = await api
+                          .post("/api/blogs/"+ blog.id+"/comments")
+                          .set("Authorization", "Bearer "+ token)
+                          .send({content: "Nice comment"})
+                          .expect(200)
+                          .expect('Content-Type', /application\/json/);
+            expect(res.body.content).toBeDefined();
+            expect(res.body.userId).toBe(user.body.id);
     });
+    test("POST /blog/:id/comments invalid auth token", async () => {
+                  await api
+                          .post("/api/blogs/"+ blog.id+"/comments")
+                          .set("Authorization", "Bearer "+ token + 123)
+                          .send({content: "Nice comment"})
+                          .expect(403);
+            
+    });
+    test("POST /blog/:id/comments invalid request body", async () => {
+      await api
+              .post("/api/blogs/"+ blog.id+"/comments")
+              .set("Authorization", "Bearer "+ token)
+              .send({})
+              .expect(400);
 
+});
+});
     
     
     //TODO: PUT /blogs/:ID

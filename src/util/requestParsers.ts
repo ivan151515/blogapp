@@ -1,4 +1,5 @@
 import { updateBlogDTO } from "../api/dto/blog.dto";
+import { CommentInput } from "../db/models/comment";
 import BadRequestError from "../errors/BadRequestError";
 import { BlogEntry, LoginEntry, UserEntry } from "../types";
 export const isString = (text : unknown) : text is string => {
@@ -30,7 +31,21 @@ const parseNumber = (value : unknown) : number => {
         throw new BadRequestError({message: "Invalid input", code: 400});
     }
 };
-
+export const toCommentInput = (body : unknown) : CommentInput => {
+    const commentInput : CommentInput = {
+        blogId : -1,
+        content: "",
+        userId: -1
+    };
+    if (body && typeof body == "object" && "blogId" in body &&"content" in body && "user" in body && body.user && typeof body.user == "object" && "id" in body.user) {
+        commentInput.content = parseString(body.content, 1, "content");
+        commentInput.userId = parseNumber(body.user.id);
+        commentInput.blogId = parseNumber(body.blogId);
+    }  else {
+        throw new BadRequestError({message: "Invalid input", code: 400});
+    }
+    return commentInput;
+};
 export const toUpdateBlogEntry = (body: unknown) : updateBlogDTO => {
     const blogEntry : updateBlogDTO = {
         userId: 0

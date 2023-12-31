@@ -13,4 +13,4 @@ Comment.belongsTo(Blog);
 User.hasOne(Profile);
 Profile.belongsTo(User);
 
-export {User, Blog};
+export {User, Blog, Comment, Profile};
