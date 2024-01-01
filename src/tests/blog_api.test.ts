@@ -8,6 +8,7 @@ const api = supertest(app);
 let blog : Blog;
 let token : string;
 let user :Response;
+let commentId : string;
 beforeAll(async() => {
   
   await connectToDatabase();
@@ -17,6 +18,11 @@ beforeAll(async() => {
   blog = await Blog.create({content: "hello", important : false, userId: Number(user.body.id as string)}); 
   const res = await api.post("/api/auth/").send({username: "ivan", password: "validpassword"});
   token = res.body.token as string;
+  const result = await api
+                          .post("/api/blogs/"+ blog.id+"/comments")
+                          .set("Authorization", "Bearer "+ token)
+                          .send({content: "First Comment"});
+  commentId = result.body.id as string;
 });
 
 describe(("/api/blogs"), () => {
@@ -116,7 +122,7 @@ describe(("/api/blogs"), () => {
             
 });               
 });
-describe("post/:id/comments ", () => {
+describe("blog/:id/comments ", () => {
     test("POST /blogs/:id/comments happy path", async () => {
       const res = await api
                           .post("/api/blogs/"+ blog.id+"/comments")
@@ -143,9 +149,86 @@ describe("post/:id/comments ", () => {
               .expect(400);
 
 });
+test("PUT /blogs/:id/comments/:commentId valid input", async () => {
+  const res = await api
+                        .put("/api/blogs/"+ blog.id + "/comments/" + commentId)
+                        .set("Authorization", "Bearer "+ token)
+                        .send({content: "this comment is updated"})
+                        .expect(200)
+                        .expect('Content-Type', /application\/json/);
+
+  
+   expect(res.body.content).toBe("this comment is updated");
 });
-    
-    
+test("PUT /blogs/:id/comments/:commentId invalid input", async () => {
+                await api
+                        .put("/api/blogs/"+ blog.id + "/comments/" + commentId)
+                        .set("Authorization", "Bearer "+ token)
+                        .send()
+                        .expect(400);
+
+  
+});
+test("PUT /blogs/:ID/comments/:commentId valid input but invalid auth header token", async () => {
+  await api
+           .put("/api/blogs/"+ blog.id+ "/comments/" + commentId)
+           .send({content: "Hello"})
+           .set("Authorization", "Bearer "+ token + "123")
+
+           .expect(403);
+         
+  });
+  test("PUT /blogs/:id/comments/:commentId check for user not owner of comment, shouldnt be allowed to update the comment", async () => {
+    await api.post("/api/users").send({username:"JOHN", name:"IVAN", password: "validpassword"});
+    const res = await api.post("/api/auth/").send({username: "JOHN", password: "validpassword"});
+    const userToken = res.body.token as string;
+    await api
+            .put("/api/blogs/"+ blog.id + "/comments/"+commentId)
+            .set("Authorization", "Bearer "+ userToken)
+            .send({content: "im trying something illegal"})
+            .expect(403);
+  
+        
+});  
+test("DELETE /blogs/:id/comments/:commentId valid request", async () => {
+              await api
+                        .delete("/api/blogs/"+ blog.id + "/comments/" + commentId)
+                        .set("Authorization", "Bearer "+ token)
+                        .expect(204);
+                        
+
+  
+   
+});
+test("DELETE /blogs/:id/comments/:commentId invalid id", async () => {
+  await api
+            .delete("/api/blogs/"+ blog.id + "/comments/" + "invalidID")
+            .set("Authorization", "Bearer "+ token)
+            .expect(400);
+            
+
+
+
+});
+test("DELETE /blogs/:id/comments/:commentId user which is not owner of comment tries to delete it", async () => {
+  await api.post("/api/users").send({username:"wrongUser", name:"IVAN", password: "validpassword"});
+    const res = await api.post("/api/auth/").send({username: "wrongUser", password: "validpassword"});
+    const userToken = res.body.token as string;
+
+    const result = await api
+                          .post("/api/blogs/"+ blog.id+"/comments")
+                          .set("Authorization", "Bearer "+ token)
+                          .send({content: "First Comment"});
+  await api
+            .delete("/api/blogs/"+ blog.id + "/comments/" + result.body.id)
+            .set("Authorization", "Bearer "+ userToken)
+            .expect(403);
+            
+
+
+
+});
+});  
     //TODO: PUT /blogs/:ID
     //TODO: DELETE /blogs/:ID
     

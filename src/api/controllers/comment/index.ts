@@ -2,7 +2,8 @@
 import { RequestHandler } from "express";
 import * as commmentService from "../../../db/services/comment";
 import { CommentInput } from "../../../db/models/comment";
-import { toCommentInput } from "../../../util/requestParsers";
+import { toCommentInput, toDeleteCommentDTO, toUpdateComment } from "../../../util/requestParsers";
+import { UpdateCommentDTO } from "../../dto/comment.dto";
 export const getComments = () => {};
 
 export const addComment : RequestHandler = async(req, res) => {
@@ -12,6 +13,15 @@ export const addComment : RequestHandler = async(req, res) => {
     res.json(comment);
 };
 
-export const deleteComment = () => {};
+export const deleteComment : RequestHandler = async(req, res) => {
+    const commentDelete = toDeleteCommentDTO({...req.body, id: Number(req.params.commentId)});
+    await commmentService.deleteComment(commentDelete);
+    res.sendStatus(204);
+};
 
-export const updateComment = () => {};
+export const updateComment :RequestHandler= async(req, res) => {
+    const commentInput : UpdateCommentDTO = toUpdateComment({...req.body, id: Number(req.params.commentId)});
+
+    const comment = await commmentService.updateCommment(commentInput);
+    res.json(comment);
+};

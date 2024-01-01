@@ -1,12 +1,12 @@
 import { updateBlogDTO } from "../api/dto/blog.dto";
-import { CommentInput } from "../db/models/comment";
+import { CreateCommentDTO, DeleteCommentDTO, UpdateCommentDTO } from "../api/dto/comment.dto";
 import BadRequestError from "../errors/BadRequestError";
 import { BlogEntry, LoginEntry, UserEntry } from "../types";
 export const isString = (text : unknown) : text is string => {
     return typeof text === 'string' || text instanceof String;
 };
 export const isNumber = (value : unknown) : value is number => {
-    return typeof value ==="number";
+    return typeof value ==="number" && !Number.isNaN(value);
 };
 const parseString = (text : unknown, minLength : number, name :string) : string => {
     if (!isString(text)) {
@@ -31,8 +31,8 @@ const parseNumber = (value : unknown) : number => {
         throw new BadRequestError({message: "Invalid input", code: 400});
     }
 };
-export const toCommentInput = (body : unknown) : CommentInput => {
-    const commentInput : CommentInput = {
+export const toCommentInput = (body : unknown) : CreateCommentDTO => {
+    const commentInput : CreateCommentDTO = {
         blogId : -1,
         content: "",
         userId: -1
@@ -45,6 +45,35 @@ export const toCommentInput = (body : unknown) : CommentInput => {
         throw new BadRequestError({message: "Invalid input", code: 400});
     }
     return commentInput;
+};
+export const toDeleteCommentDTO = (body: unknown): DeleteCommentDTO => {
+    const commentInput : DeleteCommentDTO = {
+        userId: 0,
+        id: 0
+    };
+    if (body && typeof body == "object" && "user" in body && body.user && typeof body.user == "object" && "id" in body.user && "id" in body) {
+        commentInput.userId = parseNumber(body.user.id);
+        commentInput.id = parseNumber(body.id);
+    } else {
+        throw new BadRequestError({message: "Invalid input", code: 400});
+    }
+    return commentInput;
+};
+export const toUpdateComment = (body: unknown): UpdateCommentDTO => {
+    const comment : UpdateCommentDTO = {
+        content: "",
+        userId: 0
+    };
+    console.log(body);
+    if (body && typeof body === "object" && "content" in body && "user" in body && body.user && typeof body.user == "object" && "id" in body.user && "id" in body) {
+        comment.content = parseString(body.content, 1, "content");
+        comment.userId = parseNumber(body.user.id);
+        comment.id = parseNumber(body.id);
+    } else {
+        console.log("i THRWO ERROR");
+        throw new BadRequestError({message: "Invalid input"});
+    }
+    return comment;
 };
 export const toUpdateBlogEntry = (body: unknown) : updateBlogDTO => {
     const blogEntry : updateBlogDTO = {
