@@ -1,5 +1,6 @@
 import { updateBlogDTO } from "../api/dto/blog.dto";
 import { CreateCommentDTO, DeleteCommentDTO, UpdateCommentDTO } from "../api/dto/comment.dto";
+import {  UpdateProfileDTO } from "../api/dto/profile.dto";
 import BadRequestError from "../errors/BadRequestError";
 import { BlogEntry, LoginEntry, UserEntry } from "../types";
 export const isString = (text : unknown) : text is string => {
@@ -17,6 +18,7 @@ const parseString = (text : unknown, minLength : number, name :string) : string 
     }
     return text;
 };
+
 const parseBoolean = (value : unknown) : boolean => {
     if  (typeof value == "boolean") {
         return value;
@@ -30,6 +32,35 @@ const parseNumber = (value : unknown) : number => {
     } else{
         throw new BadRequestError({message: "Invalid input", code: 400});
     }
+};
+export const toUserIdFromToken = (token : unknown) => {
+    if (token && typeof token == "object" && "id" in token) {
+        return parseNumber(token.id);
+    } else {
+        console.log("im fthowing error");
+        throw new Error("Something went wrong");
+    }
+};
+export const toProfileEntry = (body: unknown) : UpdateProfileDTO => {
+    const profileEntry : UpdateProfileDTO = {
+        created: true,
+    };
+    if (body && typeof body == "object" ) {
+        if ("bio" in body) {
+            profileEntry.bio = parseString(body.bio, 1, "bio");
+        }
+        if ("age" in body) {
+            profileEntry.age = parseNumber(body.age);
+        }
+        if ("occupation" in body) {
+            profileEntry.occupation = parseString(body.occupation, 3, "occupation");
+        }
+    } else {
+        throw new BadRequestError({message: "Invalid input", code: 400});
+    }
+    //TODO: 
+    console.log(body);
+    return profileEntry;
 };
 export const toCommentInput = (body : unknown) : CreateCommentDTO => {
     const commentInput : CreateCommentDTO = {

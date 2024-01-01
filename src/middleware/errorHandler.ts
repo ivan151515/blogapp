@@ -24,6 +24,9 @@ export const errorHandler :ErrorRequestHandler = (err, _request, res, _next) => 
     if (err.name == "JsonWebTokenError") {
       throw new BadRequestError({code: 403, message: "Action not allowed"});
     }
+    if (err.name === "SequelizeValidationError") {
+      throw new BadRequestError({message: "Invalid input", code: 400});
+    }
       // Unhandled errors
       console.error(JSON.stringify(err, null, 2));
       return res.status(500).send({ errors: [{ message: "Something went wrong" }] });

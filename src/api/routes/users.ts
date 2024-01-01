@@ -10,6 +10,6 @@ userRouter.get("/", userController.getUsers);
 userRouter.post("/", userController.createUser);
 userRouter.get("/:id", userController.getUser); 
 
-userRouter.post("/:id/", tokenExtractor, userController.updateProfile);
+userRouter.put("/:id/", tokenExtractor, userController.updateProfile);
 
 export default userRouter;

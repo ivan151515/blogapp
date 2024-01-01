@@ -3,6 +3,7 @@ import app from "../app";
 import { connectToDatabase, sequelize } from "../util/db";
 import Blog from "../db/models/blog";
 import User from "../db/models/user";
+import { Profile } from "../db/models";
 
 const api = supertest(app);
 let blog : Blog;
@@ -14,9 +15,11 @@ beforeAll(async() => {
   await connectToDatabase();
   await User.sync({force: true});
   await  Blog.sync({force: true});
-  user = await api.post("/api/users").send({username:"ivan", name:"IVAN", password: "validpassword"});
+  await Profile.sync({force: true});
+  user = await api.post("/api/users").send({username:"newestuser", name:"IVAN", password: "validpassword"});
+  console.log(user);
   blog = await Blog.create({content: "hello", important : false, userId: Number(user.body.id as string)}); 
-  const res = await api.post("/api/auth/").send({username: "ivan", password: "validpassword"});
+  const res = await api.post("/api/auth/").send({username: "newestuser", password: "validpassword"});
   token = res.body.token as string;
   const result = await api
                           .post("/api/blogs/"+ blog.id+"/comments")
@@ -42,7 +45,7 @@ describe(("/api/blogs"), () => {
           expect(res.body.id).toBeDefined();
           expect(res.body.content).toBe("hello");
           expect(res.body.user).toBeDefined();
-          expect(res.body.user.username).toBe("ivan");
+          expect(res.body.user.username).toBe("newestuser");
       }); 
       test("GET blogs/:id invalid id gets 404", async() => {
           await api.get("/api/blogs/fakeid")

@@ -9,7 +9,7 @@ export interface UserAttributes {
 }
 
 export interface UserInput extends Optional<UserAttributes, 'id'> {}
-export interface UserOutput extends Required<UserAttributes>{}
+export interface UserOutput extends Optional<UserAttributes, "password">{}
 
 class User extends Model<UserAttributes, UserInput> implements UserAttributes{
   public id!: number;

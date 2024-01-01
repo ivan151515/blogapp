@@ -5,9 +5,12 @@ import User from "../db/models/user";
 
 const api = supertest(app);
 let user: User;
+let userId : string;
+let userToken: string;
 beforeAll(async() => {
   await connectToDatabase();
     await User.sync({force: true});
+    
    user =await User.create({
     username: "Ivan",
     name: "test",
@@ -25,16 +28,17 @@ describe(("/api/users"), () => {
         expect(result.body.length).toBe(1);
     });
     test("POST /api/users successfull", async() => {
-         await api
-              .post("/api/users")
-              .send({
-                username: "amnadsasd", 
-                name : "test",
-                password: "validPassword"
-                })
-                .expect(200)
-                .expect('Content-Type', /application\/json/);
-              });
+         const res =await api
+                  .post("/api/users")
+                  .send({
+                    username: "amnadsasd", 
+                    name : "test",
+                    password: "validPassword"
+                    })
+                    .expect(200)
+                    .expect('Content-Type', /application\/json/);
+                    console.log(res.body);
+                  });
     test("POST /api/users, username already taken, invalid inputs", async () => {
                       await api.post("/api/users")
                             .send({
@@ -80,13 +84,43 @@ describe(("/api/users"), () => {
               expect(res.body.id).toBeDefined();
               expect(res.body.username).toBe("Ivan");
               expect(res.body.blogs).toBeDefined();
+              expect(res.body.password).not.toBeDefined();
+              expect(res.body.profile).toBeDefined();
     }); 
     test("GET users/:id invalid id gets 404", async() => {
               await api.get("/api/users/fakeid")
                         .expect(404);
     });                
-                    
-                      
+    test("PUT users/:id update profile happy path",async () => {
+        const user = await api.post("/api/users").send({username:"JOHN", name:"IVAN", password: "validpassword"});
+        const res = await api.post("/api/auth/").send({username: "JOHN", password: "validpassword"});
+        userToken = res.body.token as string;
+        userId = user.body.id as string;
+        const response = await api.put("/api/users/" + userId)
+                                  .set("Authorization", "Bearer "+ userToken)
+                                  .send({bio: "Hi im me", age: 21})
+                                  .expect(200)
+                                  .expect('Content-Type', /application\/json/);
+        console.log(response.body);
+        expect(response.body.created).toBe(true);
+        expect(response.body.bio).toBe("Hi im me");
+
+    });    
+    test("PUT users/:id invalid age", async () => {
+
+                        await api.put("/api/users/"+ userId)
+                                .set("Authorization", "Bearer "+ userToken)
+                                .send({bio: "Hi im me", age: -21})
+                                .expect(400);
+    });    
+    test("PUT users/:id user which doesnt own the profile tries to update it", async () => {
+        await api.post("/api/users").send({username:"wrong", name:"IVAN", password: "validpassword"});
+        const res = await api.post("/api/auth/").send({username: "wrong", password: "validpassword"});
+        await api.put("/api/users/"+ userId)
+              .set("Authorization", "Bearer "+ res.body.token)
+              .send({bio: "Hi im me", age: 21})
+              .expect(403);
+});                
     });
 
     //TODO: GET /USERS/ID
@@ -97,5 +131,6 @@ describe(("/api/users"), () => {
 
 
 afterAll(async() => {
+    await User.sync({force: true});
     await sequelize.close();
 });

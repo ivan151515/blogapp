@@ -10,7 +10,7 @@ interface ProfileAttributes {
     created: boolean
 }
 
-export interface ProfileInput extends Optional<ProfileAttributes, 'id'> {
+export interface ProfileInput extends Optional<ProfileAttributes, 'id'| "age"| "bio" | "occupation" | "created" > {
 }
 export interface ProfileOutput extends Required<ProfileAttributes>{
     
@@ -34,7 +34,6 @@ Profile.init({
       },
       bio: {
         type: DataTypes.TEXT,
-        allowNull: false
       },
       created : {
         type: DataTypes.BOOLEAN,
