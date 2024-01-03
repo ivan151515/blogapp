@@ -8,3 +8,8 @@ export const logIn : RequestHandler = async (req, res) => {
 
     return res.json(response);
 };
+
+export const verify : RequestHandler =  (req, res) => {
+    console.log(req.body);
+    res.json(req.body.user);
+};

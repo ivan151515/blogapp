@@ -3,6 +3,7 @@ import app from "../app";
 import { connectToDatabase, sequelize } from "../util/db";
 import User from "../db/models/user";
 
+let token  : string = "";
 const api = supertest(app);
 beforeAll(async() => {
   await connectToDatabase();
@@ -18,6 +19,7 @@ describe("Log in", () => {
             .expect('Content-Type', /application\/json/);
 
         expect(res.body.token).toBeDefined();
+        token = res.body.token as string;
         expect(res.body.username).toBe("BROKI");
     });
     test("Incorrect password failed log in", async() => {
@@ -32,6 +34,23 @@ describe("Log in", () => {
             .send({username: "steven", password: "wrongpassword"})
             .expect(403);
     });
+
+    test("get /api/auth verifying token on app refresh/start valid token", async () => {
+        const res = await api.get("/api/auth")
+                    .set("Authorization", "Bearer "+ token)
+                    .expect(200)
+                    .expect('Content-Type', /application\/json/);
+        expect(res.body.username).toBeDefined();
+        expect(res.body.id).toBeDefined();
+    });
+
+    test("get /api/auth verifying token on app refresh/start invalid token", async () => {
+        await api.get("/api/auth")
+                    .set("Authorization", "Bearer "+ token+ "123")
+                    .expect(403);
+        
+    });
+
     afterAll(async() => {
         await sequelize.close();
     });
