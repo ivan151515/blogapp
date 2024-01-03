@@ -13,7 +13,10 @@ export const getById = async (id: string): Promise<BlogOutput> => {
     const res = await Blog.findByPk(id, {
         attributes: { exclude: ['userId'] },
         include : {
-            model : User
+            model : User,
+            attributes : {
+                exclude: ["password"]
+            }
         }
     },);
     if (!res) {
