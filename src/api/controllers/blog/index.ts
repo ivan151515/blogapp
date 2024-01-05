@@ -2,7 +2,7 @@
 import * as blogService from "../../../db/services/blog";
 import {RequestHandler } from "express";
 import { BlogEntry } from "../../../types";
-import { toBlogEntry, toUpdateBlogEntry } from "../../../util/requestParsers";
+import { toBlogEntry, toUpdateBlogEntry, toUserIdFromToken } from "../../../util/requestParsers";
 import { updateBlogDTO } from "../../dto/blog.dto";
 export const getBlogs : RequestHandler = async (_req, res) => {
     const blogs = await blogService.getAll();
@@ -34,4 +34,11 @@ export const updateBlog : RequestHandler = async (req, res) => {
         res.json(blog);
     }else throw new Error("Something went wrong");
 
+};
+export const deleteBlog : RequestHandler = async (req, res) => {
+    //TODO: CORRECT BELLOW, PUT JUST TO NOT BE IN ERROR
+    const userId = toUserIdFromToken(req.body.user);
+    const response =await blogService.deleteBlog(userId, req.params.id);
+    
+    res.status(204).json(response);
 };

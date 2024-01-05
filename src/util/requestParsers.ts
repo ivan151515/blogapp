@@ -26,7 +26,7 @@ const parseBoolean = (value : unknown) : boolean => {
         throw new BadRequestError({message: "Invalid input", code: 400});
     }
 };
-const parseNumber = (value : unknown) : number => {
+export const parseNumber = (value : unknown) : number => {
     if (isNumber(value)) {
         return value;
     } else{

@@ -11,7 +11,6 @@ export const getAll = async() : Promise<BlogOutput[]>=> {
 
 export const getById = async (id: string): Promise<BlogOutput> => {
     const res = await Blog.findByPk(id, {
-        attributes: { exclude: ['userId'] },
         include : {
             model : User,
             attributes : {
@@ -30,6 +29,14 @@ export const createBlog = async (input : BlogInput) => {
     return blog;
 };
 
+export const deleteBlog = async (blogId : string) => {
+    const res = await Blog.destroy({
+        where : {
+            id: blogId
+        }
+    });
+    return res;
+};
 
 export const updateBlog = async (important : boolean, id: string) => {
     const [, [blog]] = await Blog.update({important}, {

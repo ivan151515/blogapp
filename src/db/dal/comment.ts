@@ -25,7 +25,14 @@ export const updateComment = async (id : number, content : string) => {
     });
     return comment;
 };  
-
+export const deleteAllBlogsComments = async( blogId: string) =>  {
+    const res = await Comment.destroy({
+        where: {
+            blogId
+        }
+    });
+    return res;
+};
 export const deleteComment = async (id: number) => {
     await Comment.destroy({
         where : {

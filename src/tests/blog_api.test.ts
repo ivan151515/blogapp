@@ -3,7 +3,7 @@ import app from "../app";
 import { connectToDatabase, sequelize } from "../util/db";
 import Blog from "../db/models/blog";
 import User from "../db/models/user";
-import { Profile } from "../db/models";
+import { Comment, Profile } from "../db/models";
 
 const api = supertest(app);
 let blog : Blog;
@@ -17,8 +17,9 @@ beforeAll(async() => {
   await  Blog.sync({force: true});
   await Profile.sync({force: true});
   user = await api.post("/api/users").send({username:"newestuser", name:"IVAN", password: "validpassword"});
-  console.log(user);
+  console.log(user.body.id, "USER_BODY_ID");
   blog = await Blog.create({content: "hello", important : false, userId: Number(user.body.id as string)}); 
+  console.log(blog.userId, "BLOG_USER_ID");
   const res = await api.post("/api/auth/").send({username: "newestuser", password: "validpassword"});
   token = res.body.token as string;
   const result = await api
@@ -231,6 +232,32 @@ test("DELETE /blogs/:id/comments/:commentId user which is not owner of comment t
 
 
 
+});
+test("DELETE /blogs/:id invalid id", async () => {
+    await api.delete("/api/blogs/"+ "-123231")
+              .set("Authorization", "Bearer " + token)
+              .expect(404);
+});
+
+test("Delete /blogs/:id user which is not owner of the blog tries to delete it", async ( ) => {
+          const res = await api.post("/api/auth/").send({username: "wrongUser", password: "validpassword"});
+          const userToken = res.body.token as string;
+          await api.delete("/api/blogs/"+blog.id)
+                  .set("Authorization", "Bearer " + userToken)
+                  .expect(403);
+});
+
+test("Delete /blogs/:id valid request", async() => {
+      await api.delete("/api/blogs/"+blog.id)
+                .set("Authorization", "Bearer "+ token)
+                .expect(204);
+      //ALSO ALL COMMENTS OF THE POST ARE GONE
+      const res = await Comment.findAll({
+        where: {
+          blogId: blog.id
+        }
+      });
+      expect(res.length).toBe(0);
 });
 });  
     //TODO: PUT /blogs/:ID

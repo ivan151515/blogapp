@@ -14,6 +14,7 @@ blogRouter.get("/", blogController.getBlogs);
 blogRouter.get("/:id", blogController.getBlog);
 blogRouter.post("/",tokenExtractor, blogController.createBlog);
 blogRouter.put("/:id",tokenExtractor, blogController.updateBlog);
+blogRouter.delete("/:id", tokenExtractor, blogController.deleteBlog);
 blogRouter.post("/:id/comments", tokenExtractor, commentController.addComment);
 blogRouter.put("/:id/comments/:commentId", tokenExtractor, commentController.updateComment);
 blogRouter.delete("/:id/comments/:commentId", tokenExtractor, commentController.deleteComment);
