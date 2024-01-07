@@ -46,6 +46,7 @@ describe(("/api/blogs"), () => {
           expect(res.body.id).toBeDefined();
           expect(res.body.content).toBe("hello");
           expect(res.body.user).toBeDefined();
+          expect(res.body.comments).toBeDefined();
           expect(res.body.user.username).toBe("newestuser");
           expect(res.body.user.password).not.toBeDefined();
       }); 

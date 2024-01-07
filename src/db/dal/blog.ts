@@ -1,6 +1,6 @@
 import BadRequestError from "../../errors/BadRequestError";
 import { BlogInput, BlogOutput } from "../models/blog";
-import {Blog, User} from "../models/";
+import {Blog, Comment, User} from "../models/";
 
 export const getAll = async() : Promise<BlogOutput[]>=> {
     const res = await Blog.findAll(
@@ -11,12 +11,17 @@ export const getAll = async() : Promise<BlogOutput[]>=> {
 
 export const getById = async (id: string): Promise<BlogOutput> => {
     const res = await Blog.findByPk(id, {
-        include : {
+        include : [{
             model : User,
             attributes : {
                 exclude: ["password"]
             }
+        },
+        {
+            model: Comment,
+            
         }
+        ]
     },);
     if (!res) {
         throw new BadRequestError({message: "Not found", code: 404});

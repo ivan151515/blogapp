@@ -38,7 +38,7 @@ export const updateBlog : RequestHandler = async (req, res) => {
 export const deleteBlog : RequestHandler = async (req, res) => {
     //TODO: CORRECT BELLOW, PUT JUST TO NOT BE IN ERROR
     const userId = toUserIdFromToken(req.body.user);
-    const response =await blogService.deleteBlog(userId, req.params.id);
+    await blogService.deleteBlog(userId, req.params.id);
     
-    res.status(204).json(response);
+    res.sendStatus(204);
 };
