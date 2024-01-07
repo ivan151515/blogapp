@@ -19,7 +19,12 @@ export const getById = async (id: string): Promise<BlogOutput> => {
         },
         {
             model: Comment,
-            
+            include : [{
+                model: User,
+                attributes: {
+                    exclude: ["password", "id"]
+                }
+            }]
         }
         ]
     },);
