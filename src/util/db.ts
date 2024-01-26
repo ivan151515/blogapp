@@ -12,6 +12,12 @@ const migrationConf = {
   migrations: {
     glob: 'src/migrations/*.ts',
   },
+  dialectOptions: {
+    ssl: {
+      require: true,
+      rejectUnauthorized: false, // For self-signed certificates
+    },
+  },
   storage: new SequelizeStorage({ sequelize, tableName: 'migrations' }),
   context: sequelize.getQueryInterface(),
   logger: console,
